@@ -1,0 +1,18 @@
+$ docker compose run --rm app python -m src.evaluate --impl student --reuse-seeded --only-layer long_term
+E09 long_term: Lan uu tien stack backend nao cho LOTUS-88?
+  PASS  2747.3 ms
+E02 long_term: Voi demo ca nhan cua Minh, ngon ngu uu tien la gi?
+  PASS  1659.3 ms
+E03 long_term: Minh con open loop hay deadline nao chua hoan thanh?
+  PASS  1975.8 ms
+E08 long_term: Backend cua BLUEBIRD-42 bat buoc dung stack gi?
+  PASS  1957.9 ms
+           Benchmark summary            
+┏━━━━━━┳━━━━━━━━━━━┳━━━━━━┳━━━━━━━━━━━━┓
+┃ Case ┃ Layer     ┃ Pass ┃ Latency ms ┃
+┡━━━━━━╇━━━━━━━━━━━╇━━━━━━╇━━━━━━━━━━━━┩
+│ E09  │ long_term │ yes  │     2747.3 │
+│ E02  │ long_term │ yes  │     1659.3 │
+│ E03  │ long_term │ yes  │     1975.8 │
+│ E08  │ long_term │ yes  │     1957.9 │
+└──────┴───────────┴──────┴────────────┘

@@ -1,0 +1,13 @@
+$ docker compose run --rm app python -m src.evaluate --impl student --reuse-seeded --only-layer episodic
+E04 episodic: Lan truoc Minh fix async HTTP timeout bang cach nao?
+  PASS  551.4 ms
+E05 episodic: Reflection cua su co async la gi, tang timeout co phai root fix 
+khong?
+  PASS  267.9 ms
+           Benchmark summary           
+┏━━━━━━┳━━━━━━━━━━┳━━━━━━┳━━━━━━━━━━━━┓
+┃ Case ┃ Layer    ┃ Pass ┃ Latency ms ┃
+┡━━━━━━╇━━━━━━━━━━╇━━━━━━╇━━━━━━━━━━━━┩
+│ E04  │ episodic │ yes  │      551.4 │
+│ E05  │ episodic │ yes  │      267.9 │
+└──────┴──────────┴──────┴────────────┘

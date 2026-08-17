@@ -1,0 +1,11 @@
+$ docker compose run --rm app python -m src.smoke
+ Container vinuni-lab17-zep-memory-qdrant-1 Running 
+ Container vinuni-lab17-zep-memory-redis-1 Running 
+ Container vinuni-lab17-zep-memory-redis-1 Waiting 
+ Container vinuni-lab17-zep-memory-redis-1 Healthy 
+ Container vinuni-lab17-zep-memory-app-run-39269b592842 Creating 
+ Container vinuni-lab17-zep-memory-app-run-39269b592842 Created 
+[OK] Redis reachable
+[OK] Qdrant reachable
+[OK] sessions.json valid: 11 evaluations
+[OK] ZEP_API_KEY is present

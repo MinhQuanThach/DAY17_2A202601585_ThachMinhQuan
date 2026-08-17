@@ -1,0 +1,19 @@
+$ python -m src.forget --user-id minh-lab17
+Deleting user-scoped memory for 'minh-lab17'...
+Redis keys deleted: 3
+Zep user absent: True
+Redis user keys remaining: 0
+Shared semantic KB remains intact because it stores domain knowledge, not user PII.
+
+$ python -m src.forget --user-id minh-lab17 --verify-only
+Zep user absent: True
+Redis user keys remaining: 0
+Shared semantic KB remains intact because it stores domain knowledge, not user PII.
+
+$ retrieval check on deleted user minh-lab17
+  scope=episodes  -> HTTP 404 user not found (memory unreachable)
+  scope=edges     -> HTTP 404 user not found (memory unreachable)
+  scope=nodes     -> HTTP 404 user not found (memory unreachable)
+
+Shared semantic KB is untouched (domain knowledge, no user PII):
+  PAYMENT-RULE-3 still retrievable = True
