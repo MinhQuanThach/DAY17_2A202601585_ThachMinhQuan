@@ -9,6 +9,7 @@
 | `semantic.{log,png}` | `--only-layer semantic` → E06, E11 PASS |
 | `privacy.{log,png}` | `src.forget` + `--verify-only` + kiểm tra retrieval sau khi xoá |
 | `benchmark_student.{log,png}` | Full run 11/11, sinh ra `reports/benchmark.*` |
+| `golden.{log,png}` | Golden set 20/20, sinh ra `reports/golden_benchmark.*` |
 | `smoke.{log,png}` | Redis / Qdrant / dataset / `ZEP_API_KEY` |
 | `seed.log`, `reseed.log` | Seed trước benchmark, và seed lại sau privacy drill |
 
@@ -56,3 +57,25 @@ expose ra localhost. Code và kết quả không khác gì chạy trong containe
 
 Không sửa file starter kit nào ngoài `src/memory_student.py`. File mới duy nhất được thêm
 là `scripts/render_evidence.py` (chỉ dùng để vẽ ảnh, không nằm trong đường chấm điểm).
+
+## Golden set: hai lỗi phải sửa
+
+Bản đầu tiên (chỉ có Context Block + edge search) đạt **19/20**. Hai vòng sửa:
+
+**1. G04 — fact extraction diễn giải lại literal.** Case cần đúng chuỗi `16:00`.
+Nguồn ghi `truoc thu Sau luc 16:00`, nhưng Zep trích xuất thành *"due by 4:00 PM"*
+và *"due by Thursday"* — mất cả `16:00` lẫn `Friday`. Chuỗi gốc chỉ còn trong **raw
+episode**. Vì vậy `retrieve_long_term` thêm một lượt `scope="episodes"` nữa, nối vào
+cuối để dưới budget mixed thì phần bị cắt là các dòng verbatim chứ không phải summary.
+
+**2. G20 — probe của chính benchmark chiếm chỗ evidence thật.** `prime_eval_thread`
+ghi câu hỏi đánh giá vào graph, nên chúng trở thành episode tìm kiếm được
+(`role="Evaluation User"`). Query golden đều là prompt dài và nhiễu, nên Zep xếp các
+probe dài khác **cao hơn** message ngắn mang marker; budget episodic 240 token sau đó
+cắt mất `ClientSession`. `prioritize_episodes()` xử lý hai việc: loại probe, rồi sắp
+xếp phần còn lại theo `score` giảm dần — vì Zep trả episode theo **thứ tự thời gian**
+còn `ContextBudgetManager.trim` lại giữ phần **đầu**, tức mặc định là cắt đúng những
+episode mới nhất.
+
+Sau khi sửa: 5 lần chạy golden liên tiếp đều 20/20, practice vẫn 11/11.
+Biên của G20 vẫn hẹp (`ClientSession` ở episode thứ 8 trong 9 episode lọt budget).

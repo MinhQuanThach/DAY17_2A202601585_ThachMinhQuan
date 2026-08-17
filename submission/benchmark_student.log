@@ -1,42 +1,42 @@
 $ docker compose run --rm app python -m src.evaluate --impl student --reuse-seeded
 E01 short_term: Ten du an ca nhan toi vua nhac la gi?
-  PASS  0.0 ms
+  PASS  0.1 ms
 E06 semantic: Quy tac retry POST payment la gi?
-  PASS  659.7 ms
+  PASS  547.5 ms
 E09 long_term: Lan uu tien stack backend nao cho LOTUS-88?
-  PASS  1351.1 ms
+  PASS  1927.9 ms
 E10 short_term: Deadline review cu la khi nao?
-  PASS  0.5 ms
+  PASS  1.1 ms
 E02 long_term: Voi demo ca nhan cua Minh, ngon ngu uu tien la gi?
-  PASS  2001.5 ms
+  PASS  2163.5 ms
 E03 long_term: Minh con open loop hay deadline nao chua hoan thanh?
-  PASS  1412.2 ms
+  PASS  2211.1 ms
 E04 episodic: Lan truoc Minh fix async HTTP timeout bang cach nao?
-  PASS  282.9 ms
+  PASS  327.6 ms
 E05 episodic: Reflection cua su co async la gi, tang timeout co phai root fix 
 khong?
-  PASS  381.4 ms
+  PASS  276.9 ms
 E07 mixed: Hay chon huong dan code retry payment phu hop voi preference ca nhan 
 cua Minh.
-  PASS  2482.5 ms
+  PASS  2226.6 ms
 E11 semantic: Theo incident playbook, truoc khi tang timeout can kiem tra gi?
-  PASS  268.1 ms
+  PASS  324.2 ms
 E08 long_term: Backend cua BLUEBIRD-42 bat buoc dung stack gi?
-  PASS  1637.8 ms
+  PASS  1722.2 ms
             Benchmark summary            
 ┏━━━━━━┳━━━━━━━━━━━━┳━━━━━━┳━━━━━━━━━━━━┓
 ┃ Case ┃ Layer      ┃ Pass ┃ Latency ms ┃
 ┡━━━━━━╇━━━━━━━━━━━━╇━━━━━━╇━━━━━━━━━━━━┩
-│ E01  │ short_term │ yes  │        0.0 │
-│ E06  │ semantic   │ yes  │      659.7 │
-│ E09  │ long_term  │ yes  │     1351.1 │
-│ E10  │ short_term │ yes  │        0.5 │
-│ E02  │ long_term  │ yes  │     2001.5 │
-│ E03  │ long_term  │ yes  │     1412.2 │
-│ E04  │ episodic   │ yes  │      282.9 │
-│ E05  │ episodic   │ yes  │      381.4 │
-│ E07  │ mixed      │ yes  │     2482.5 │
-│ E11  │ semantic   │ yes  │      268.1 │
-│ E08  │ long_term  │ yes  │     1637.8 │
+│ E01  │ short_term │ yes  │        0.1 │
+│ E06  │ semantic   │ yes  │      547.5 │
+│ E09  │ long_term  │ yes  │     1927.9 │
+│ E10  │ short_term │ yes  │        1.1 │
+│ E02  │ long_term  │ yes  │     2163.5 │
+│ E03  │ long_term  │ yes  │     2211.1 │
+│ E04  │ episodic   │ yes  │      327.6 │
+│ E05  │ episodic   │ yes  │      276.9 │
+│ E07  │ mixed      │ yes  │     2226.6 │
+│ E11  │ semantic   │ yes  │      324.2 │
+│ E08  │ long_term  │ yes  │     1722.2 │
 └──────┴────────────┴──────┴────────────┘
 Reports: /workspace/reports/benchmark.json | /workspace/reports/benchmark.md

@@ -1,6 +1,6 @@
 # Lab 17 — Multi-Memory Agent với Zep
 
-**Kết quả:** `--impl student --reuse-seeded` → **11/11 PASS (100%)**; baseline no-memory **2/11 (18.2%)**. Chi tiết: `reports/benchmark.md`, `reports/comparison.md`, `submission/*.png`.
+**Kết quả:** practice **11/11 (100%)**, golden **20/20**, baseline no-memory **2/11 (18.2%)**. Chi tiết: `reports/benchmark.md`, `reports/golden_benchmark.md`, `reports/comparison.md`, `submission/`.
 
 ## 3 câu bắt buộc
 
@@ -13,8 +13,8 @@
 ## 4 câu phân tích benchmark
 
 1. **Hit rate thấp nhất:** không layer nào dưới 100%. Ở baseline no-memory, long_term/episodic/semantic/mixed đều 0%, chỉ short_term 2/2 — evidence của chúng nằm ngoài thread hiện tại.
-2. **Nhiều token nhất:** E08 (1484 token), rồi E02 (1477) và E03 (1468) — Context Block luôn kèm USER_SUMMARY + FACTS + ENTITIES.
-3. **E07 (mixed):** cần long-term + semantic; evidence bắt buộc là `Python` (preference cá nhân) và `Idempotency-Key` (KB dùng chung). Budget cắt long-term 1486→324 token (trần 320), semantic giữ 148/240.
+2. **Nhiều token nhất:** E02 (1768 token), rồi E03 (1685) và E08 (1607) — long-term gộp Context Block, facts và raw episodes.
+3. **E07 (mixed):** cần long-term + semantic; evidence bắt buộc là `Python` (preference cá nhân) và `Idempotency-Key` (KB dùng chung). Budget cắt long-term 1719→324 token (trần 320), semantic giữ 148/240.
 4. **Token reduction:** memory 14.2% còn no-memory 81.8% nhưng chỉ 18.2% hit rate — không retrieve gì thì reduction gần tuyệt đối. Reduction chỉ có nghĩa khi đọc cùng hit rate.
 
 ## E08 recency và E10 compaction

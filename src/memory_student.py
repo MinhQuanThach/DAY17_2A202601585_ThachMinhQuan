@@ -18,6 +18,59 @@ EPISODE_CHAR_CAP = 200
 # open-loop deadline; a small limit tends to drop them, hence 24.
 FACT_SEARCH_LIMIT = 24
 
+# Raw episodes backing up the long-term layer. Each lab user only owns a handful
+# of session messages, so 20 covers the whole history plus the evaluation-thread
+# probes without pulling in another user's data (the search is user-scoped).
+EPISODE_SEARCH_LIMIT = 20
+
+# `prime_eval_thread` writes the benchmark's own question into an eval thread as
+# Message(name="Evaluation User"), and Zep surfaces it as role="Evaluation User".
+# Those episodes are questions the harness just asked, not something the user
+# ever experienced, so they must not count as episodic memory.
+PROBE_ROLE = "Evaluation User"
+
+
+class _EpisodeFilteredResults:
+    """Same shape as a Zep search result, with some episodes removed.
+
+    render_graph_search() reads a fixed set of attributes off the result object,
+    so passing this shim keeps that starter-kit renderer untouched.
+    """
+
+    _PASSTHROUGH = ("context", "edges", "nodes", "observations", "thread_summaries")
+
+    def __init__(self, results: Any, episodes: list[Any]):
+        for attr in self._PASSTHROUGH:
+            setattr(self, attr, getattr(results, attr, None))
+        self.episodes = episodes
+
+
+def _score_of(episode: Any) -> float:
+    try:
+        return float(getattr(episode, "score", None))
+    except (TypeError, ValueError):
+        return float("-inf")
+
+
+def prioritize_episodes(results: Any) -> Any:
+    """Drop evaluation probes, then order the rest most-relevant first.
+
+    Two problems the raw result has under a tight budget:
+
+    1. The probes are long, noisy prompts, so a long noisy query ranks them above
+       the short source message that carries the marker.
+    2. Zep returns episodes in chronological order, not by score, and
+       ContextBudgetManager.trim keeps the HEAD — so the trim silently drops the
+       newest episodes, which are usually the ones the query is about.
+
+    Sorting by score means whatever survives the trim is the best evidence
+    available rather than merely the oldest.
+    """
+    episodes = getattr(results, "episodes", None) or []
+    kept = [e for e in episodes if getattr(e, "role", None) != PROBE_ROLE]
+    kept.sort(key=_score_of, reverse=True)
+    return _EpisodeFilteredResults(results, kept)
+
 
 class StudentMemory:
     """Only this file needs to be edited by students."""
@@ -45,13 +98,15 @@ class StudentMemory:
         user_context = self.client.thread.get_user_context(thread_id=thread_id)
         context_block = getattr(user_context, "context", "") or ""
 
+        capped = cap_query(query)
+
         # Second pass over the user graph edges. Edges are the extracted facts,
         # and each carries valid_at / invalid_at, so a superseded preference
         # stays visible next to the current one (recency/conflict, E08).
         try:
             edges = self.client.graph.search(
                 user_id=user_id,
-                query=cap_query(query),
+                query=capped,
                 scope="edges",
                 limit=FACT_SEARCH_LIMIT,
             )
@@ -60,7 +115,26 @@ class StudentMemory:
             # A failed fact search must not lose the Context Block we already have.
             fact_text = ""
 
-        return join_nonempty([context_block, fact_text], sep="\n\n")
+        # Third pass over raw episodes. Fact extraction *paraphrases*: the source
+        # "truoc thu Sau luc 16:00" comes back as "due by 4:00 PM", so a query
+        # asking for the literal deadline finds neither "16:00" nor "Friday" in
+        # the Context Block or the edges. Raw episodes keep the original wording.
+        # Appended last so that under a mixed-layer budget the trim drops these
+        # verbatim lines first and keeps the ranked summary at the head.
+        try:
+            episodes = self.client.graph.search(
+                user_id=user_id,
+                query=capped,
+                scope="episodes",
+                limit=EPISODE_SEARCH_LIMIT,
+            )
+            episode_text = render_graph_search(
+                prioritize_episodes(episodes), episode_char_cap=EPISODE_CHAR_CAP
+            )
+        except Exception:
+            episode_text = ""
+
+        return join_nonempty([context_block, fact_text, episode_text], sep="\n\n")
 
     def retrieve_episodic(self, user_id: str, query: str) -> str:
         """Past trajectories of THIS user: what was tried, what worked, why.
@@ -73,9 +147,11 @@ class StudentMemory:
             user_id=user_id,
             query=cap_query(query),
             scope="episodes",
-            limit=15,
+            limit=EPISODE_SEARCH_LIMIT,
         )
-        return render_graph_search(results, episode_char_cap=EPISODE_CHAR_CAP)
+        return render_graph_search(
+            prioritize_episodes(results), episode_char_cap=EPISODE_CHAR_CAP
+        )
 
     def retrieve_semantic(self, graph_id: str, query: str) -> str:
         """Shared domain knowledge from the standalone graph.

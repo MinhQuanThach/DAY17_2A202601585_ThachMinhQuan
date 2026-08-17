@@ -1,0 +1,28 @@
+$ docker compose run --rm app python -m src.evaluate --impl student --reuse-seeded --golden
+Golden 20/20. Bonus = 10/10.
+            Benchmark summary            
+┏━━━━━━┳━━━━━━━━━━━━┳━━━━━━┳━━━━━━━━━━━━┓
+┃ Case ┃ Layer      ┃ Pass ┃ Latency ms ┃
+┡━━━━━━╇━━━━━━━━━━━━╇━━━━━━╇━━━━━━━━━━━━┩
+│ G01  │ short_term │ yes  │        0.3 │
+│ G02  │ short_term │ yes  │        0.0 │
+│ G08  │ long_term  │ yes  │     2712.6 │
+│ G09  │ long_term  │ yes  │     1930.9 │
+│ G12  │ semantic   │ yes  │      281.5 │
+│ G14  │ semantic   │ yes  │      264.3 │
+│ G15  │ semantic   │ yes  │      345.9 │
+│ G19  │ mixed      │ yes  │     2485.8 │
+│ G03  │ long_term  │ yes  │     1873.2 │
+│ G04  │ long_term  │ yes  │     2068.9 │
+│ G05  │ long_term  │ yes  │     2546.2 │
+│ G10  │ episodic   │ yes  │      521.1 │
+│ G11  │ episodic   │ yes  │      376.3 │
+│ G13  │ semantic   │ yes  │      294.6 │
+│ G16  │ mixed      │ yes  │     3454.6 │
+│ G18  │ mixed      │ yes  │      900.5 │
+│ G20  │ mixed      │ yes  │     3354.1 │
+│ G06  │ long_term  │ yes  │     2452.8 │
+│ G07  │ long_term  │ yes  │     2819.0 │
+│ G17  │ mixed      │ yes  │     3047.2 │
+└──────┴────────────┴──────┴────────────┘
+Reports: /workspace/reports/golden_benchmark.json | 
